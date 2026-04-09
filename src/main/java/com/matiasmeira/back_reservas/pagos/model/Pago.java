@@ -1,13 +1,24 @@
 package com.matiasmeira.back_reservas.pagos.model;
 
-import com.matiasmeira.back_reservas.auth.model.EstadoPago;
+import java.math.BigDecimal;
+
 import com.matiasmeira.back_reservas.booking.model.Reserva;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "pagos")
