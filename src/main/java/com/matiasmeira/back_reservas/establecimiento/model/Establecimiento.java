@@ -20,6 +20,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -87,4 +88,11 @@ public class Establecimiento {
     @OneToMany(mappedBy = "establecimiento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<com.matiasmeira.back_reservas.booking.model.ProductoCancha> productosCancha;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.estado == null) {
+            this.estado = EstadoEstablecimiento.ACTIVO;
+        }
+    }
 }
