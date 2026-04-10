@@ -151,10 +151,12 @@ public class ReservaService {
 
     private boolean estaDisponible(CombinacionPosible combinacion, LocalDate fecha,
             LocalTime horaInicio, LocalTime horaFin) {
+        // Buscamos TODOS los módulos activos y libres en ese rango horario para el predio
         List<ModuloFisico> disponibles = moduloFisicoRepository.findAvailableModulos(
             combinacion.getProductoCancha().getEstablecimiento().getId(), fecha, horaInicio, horaFin);
-        return combinacion.getModulosFisicos().stream()
-            .allMatch(modulo -> disponibles.contains(modulo));
+        
+        // Una combinación está disponible solo si TODOS sus módulos requeridos están en la lista de libres
+        return disponibles.containsAll(combinacion.getModulosFisicos());
     }
 
     private Optional<CombinacionPosible> intentarReasignacion(ProductoCancha productoCancha,
@@ -180,21 +182,40 @@ public class ReservaService {
     @Transactional(readOnly = true)
     public List<com.matiasmeira.back_reservas.booking.dto.DisponibilidadDTO> obtenerSlotsDisponibles(
             LocalDate fecha, Long productoCanchaId) {
+        
         ProductoCancha productoCancha = productoCanchaRepository.findById(productoCanchaId)
             .orElseThrow(() -> new EntidadNoEncontradaException("ProductoCancha no encontrado"));
 
         List<com.matiasmeira.back_reservas.booking.dto.DisponibilidadDTO> slots = new java.util.ArrayList<>();
-        LocalTime horaInicio = productoCancha.getEstablecimiento().getHoraApertura();
-        LocalTime horaFinLocal = productoCancha.getEstablecimiento().getHoraCierre();
+        
+        LocalTime horaActual = productoCancha.getEstablecimiento().getHoraApertura();
+        LocalTime horaCierre = productoCancha.getEstablecimiento().getHoraCierre();
+        int duracionMinutos = productoCancha.getDuracionMinima();
+        int pasoMinutos = productoCancha.getIntervaloPaso();
+        List<CombinacionPosible> combinaciones = productoCancha.getCombinacionesPosibles();
 
-        while (horaInicio.isBefore(horaFinLocal)) {
-            LocalTime horaFinSlot = horaInicio.plusMinutes(60); // Slots de 1 hora
-            boolean disponible = estaDisponible(new CombinacionPosible(), fecha, horaInicio, horaFinSlot);
+        while (horaActual.plusMinutes(duracionMinutos).isBefore(horaCierre) || 
+            horaActual.plusMinutes(duracionMinutos).equals(horaCierre)) {
+            
+            // --- LA CORRECCIÓN ESTÁ ACÁ ---
+            final LocalTime horaInicioSlot = horaActual; // Copia final para la lambda
+            final LocalTime horaFinSlot = horaInicioSlot.plusMinutes(duracionMinutos);
+            
+            // Ahora usamos 'horaInicioSlot' y 'horaFinSlot' que son final
+            boolean hayEspacioFisico = combinaciones.stream()
+                .anyMatch(combo -> estaDisponible(combo, fecha, horaInicioSlot, horaFinSlot));
+
             slots.add(new com.matiasmeira.back_reservas.booking.dto.DisponibilidadDTO(
-                horaInicio, horaFinSlot, disponible, disponible ? null : "No disponible"
+                horaInicioSlot, 
+                horaFinSlot, 
+                hayEspacioFisico, 
+                hayEspacioFisico ? null : "No hay canchas disponibles"
             ));
-            horaInicio = horaFinSlot;
+
+            // Avanzamos horaActual normalmente, ya que no se usa dentro de la lambda
+            horaActual = horaActual.plusMinutes(pasoMinutos);
         }
+        
         return slots;
     }
 

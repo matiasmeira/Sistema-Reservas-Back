@@ -15,6 +15,18 @@ import com.matiasmeira.back_reservas.booking.model.ModuloFisico;
 public interface ModuloFisicoRepository extends JpaRepository<ModuloFisico, Long> {
     List<ModuloFisico> findByEstablecimientoIdAndEstado(Long id, String estado);
 
-    @Query("SELECT m FROM ModuloFisico m WHERE m.establecimiento.id = :establecimientoId AND m.estado = 'ACTIVO' AND NOT EXISTS (SELECT ar FROM AsignacionReserva ar WHERE ar.moduloFisico.id = m.id AND ar.fecha = :fecha AND ar.horaInicio < :horaFin AND ar.horaFin > :horaInicio)")
-    List<ModuloFisico> findAvailableModulos(@Param("establecimientoId") Long establecimientoId, @Param("fecha") LocalDate fecha, @Param("horaInicio") LocalTime horaInicio, @Param("horaFin") LocalTime horaFin);
+    @Query("SELECT m FROM ModuloFisico m WHERE m.establecimiento.id = :establecimientoId " +
+           "AND m.estado = 'ACTIVO' " +
+           "AND NOT EXISTS (SELECT ar FROM AsignacionReserva ar " +
+           "                WHERE ar.moduloFisico.id = m.id " +
+           "                AND ar.reserva.fechaReserva = :fecha " +
+           "                AND ar.reserva.estado != 'CANCELADA' " +
+           "                AND ar.reserva.horaInicio < :horaFin " +
+           "                AND ar.reserva.horaFin > :horaInicio)")
+    List<ModuloFisico> findAvailableModulos(
+        @Param("establecimientoId") Long establecimientoId, 
+        @Param("fecha") LocalDate fecha, 
+        @Param("horaInicio") LocalTime horaInicio, 
+        @Param("horaFin") LocalTime horaFin
+    );
 }
