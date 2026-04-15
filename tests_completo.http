@@ -1,0 +1,384 @@
+### Plan de Pruebas Completo para API REST - BackReservas
+### Ejecutar con REST Client extension en VS Code
+### Base URL: http://localhost:8080/api
+### Context-path: /api, así que URLs reales son /api/api/... (nota: parece redundante, verificar configuración)
+
+### Variables globales
+@baseUrl = http://localhost:8080/api
+@token = {{auth_token}}
+
+### =============================================================================
+### AUTENTICACIÓN - Endpoints públicos
+### =============================================================================
+
+### 1. Registro de Usuario (CLIENTE)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "cliente.test@example.com",
+  "nombre": "Cliente Test",
+  "password": "password123",
+  "rol": "CLIENTE"
+}
+
+### 2. Registro de Usuario (DUENIO)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "duenio.test@example.com",
+  "nombre": "Dueño Test",
+  "password": "password123",
+  "rol": "DUENIO"
+}
+
+### 3. Login - Obtener Token JWT
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "duenio.test@example.com",
+  "password": "password123"
+}
+
+### Guardar el token de la respuesta anterior en la variable @token
+
+### =============================================================================
+### BOOKING - Gestión de Reservas
+### =============================================================================
+
+### 4. Obtener Disponibilidad
+GET {{baseUrl}}/booking/disponibilidad?fecha=2026-04-20&productoCanchaId=1
+Authorization: Bearer {{token}}
+
+### 5. Crear Reserva
+POST {{baseUrl}}/booking/reservar
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "fechaReserva": "2026-04-20",
+  "horaInicio": "10:00",
+  "horaFin": "11:00",
+  "productoCanchaId": 1,
+  "usuarioId": 1,
+  "permitirReasignacion": false
+}
+
+### 6. Obtener Mis Reservas
+GET {{baseUrl}}/booking/mis-reservas?usuarioId=1
+Authorization: Bearer {{token}}
+
+### 7. Obtener Reserva por ID
+GET {{baseUrl}}/booking/1
+Authorization: Bearer {{token}}
+
+### 8. Cancelar Reserva
+POST {{baseUrl}}/booking/1/cancelar
+Authorization: Bearer {{token}}
+
+### =============================================================================
+### BOOKING - Gestión de Módulos Físicos (Solo DUENIO)
+### =============================================================================
+
+### 9. Obtener Todos los Módulos Físicos
+GET {{baseUrl}}/booking/modulos-fisicos
+Authorization: Bearer {{token}}
+
+### 10. Obtener Módulo Físico por ID
+GET {{baseUrl}}/booking/modulos-fisicos/1
+Authorization: Bearer {{token}}
+
+### 11. Crear Módulo Físico (Requiere rol DUENIO)
+POST {{baseUrl}}/booking/modulos-fisicos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Cancha 1",
+  "estado": "DISPONIBLE",
+  "establecimientoId": 1
+}
+
+### 12. Actualizar Módulo Físico (Requiere rol DUENIO)
+PUT {{baseUrl}}/booking/modulos-fisicos/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Cancha 1 Actualizada",
+  "estado": "OCUPADO",
+  "establecimientoId": 1
+}
+
+### 13. Eliminar Módulo Físico (Requiere rol DUENIO)
+DELETE {{baseUrl}}/booking/modulos-fisicos/1
+Authorization: Bearer {{token}}
+
+### =============================================================================
+### BOOKING - Gestión de Productos Cancha (Solo DUENIO)
+### =============================================================================
+
+### 14. Obtener Todos los Productos Cancha
+GET {{baseUrl}}/booking/productos-cancha
+Authorization: Bearer {{token}}
+
+### 15. Obtener Producto Cancha por ID
+GET {{baseUrl}}/booking/productos-cancha/1
+Authorization: Bearer {{token}}
+
+### 16. Crear Producto Cancha (Requiere rol DUENIO)
+POST {{baseUrl}}/booking/productos-cancha
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Fútbol 5",
+  "deporte": "FUTBOL",
+  "superficie": "Césped sintético",
+  "modulosNecesarios": 1,
+  "duracionMinima": 60,
+  "intervaloPaso": 60,
+  "establecimientoId": 1
+}
+
+### 17. Actualizar Producto Cancha (Requiere rol DUENIO)
+PUT {{baseUrl}}/booking/productos-cancha/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Fútbol 5 Premium",
+  "deporte": "FUTBOL",
+  "superficie": "Césped natural",
+  "modulosNecesarios": 1,
+  "duracionMinima": 60,
+  "intervaloPaso": 60,
+  "establecimientoId": 1
+}
+
+### 18. Eliminar Producto Cancha (Requiere rol DUENIO)
+DELETE {{baseUrl}}/booking/productos-cancha/1
+Authorization: Bearer {{token}}
+
+### =============================================================================
+### BOOKING - Gestión de Combinaciones Posibles (Solo DUENIO)
+### =============================================================================
+
+### 19. Obtener Todas las Combinaciones Posibles
+GET {{baseUrl}}/booking/combinaciones-posibles
+Authorization: Bearer {{token}}
+
+### 20. Obtener Combinación Posible por ID
+GET {{baseUrl}}/booking/combinaciones-posibles/1
+Authorization: Bearer {{token}}
+
+### 21. Crear Combinación Posible (Requiere rol DUENIO)
+POST {{baseUrl}}/booking/combinaciones-posibles
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Combinación Fútbol 5",
+  "productoCanchaId": 1,
+  "modulosFisicosIds": [1, 2]
+}
+
+### 22. Actualizar Combinación Posible (Requiere rol DUENIO)
+PUT {{baseUrl}}/booking/combinaciones-posibles/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Combinación Fútbol 5 Actualizada",
+  "productoCanchaId": 1,
+  "modulosFisicosIds": [1, 2, 3]
+}
+
+### 23. Eliminar Combinación Posible (Requiere rol DUENIO)
+DELETE {{baseUrl}}/booking/combinaciones-posibles/1
+Authorization: Bearer {{token}}
+
+### =============================================================================
+### BOOKING - Gestión de Horarios Precio (Solo DUENIO)
+### =============================================================================
+
+### 24. Obtener Todos los Horarios Precio
+GET {{baseUrl}}/booking/horarios-precio
+Authorization: Bearer {{token}}
+
+### 25. Obtener Horario Precio por ID
+GET {{baseUrl}}/booking/horarios-precio/1
+Authorization: Bearer {{token}}
+
+### 26. Obtener Horarios Precio por Producto Cancha
+GET {{baseUrl}}/booking/horarios-precio/producto-cancha?productoCanchaId=1
+Authorization: Bearer {{token}}
+
+### 27. Crear Horario Precio (Requiere rol DUENIO)
+POST {{baseUrl}}/booking/horarios-precio
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "diaSemana": 1,
+  "horaInicio": "09:00",
+  "horaFin": "18:00",
+  "precioHora": 50.00,
+  "productoCanchaId": 1
+}
+
+### 28. Actualizar Horario Precio (Requiere rol DUENIO)
+PUT {{baseUrl}}/booking/horarios-precio/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "diaSemana": 1,
+  "horaInicio": "08:00",
+  "horaFin": "20:00",
+  "precioHora": 60.00,
+  "productoCanchaId": 1
+}
+
+### 29. Eliminar Horario Precio (Requiere rol DUENIO)
+DELETE {{baseUrl}}/booking/horarios-precio/1
+Authorization: Bearer {{token}}
+
+### =============================================================================
+### ESTABLECIMIENTOS
+### =============================================================================
+
+### 30. Buscar Establecimientos (sin filtros)
+GET {{baseUrl}}/establecimientos
+Authorization: Bearer {{token}}
+
+### 31. Buscar Establecimientos por deporte
+GET {{baseUrl}}/establecimientos?deporte=FUTBOL
+Authorization: Bearer {{token}}
+
+### 32. Buscar Establecimientos por cercanía
+GET {{baseUrl}}/establecimientos?latitud=-34.6037&longitud=-58.3816&radioKm=10
+Authorization: Bearer {{token}}
+
+### 33. Obtener Establecimiento por ID
+GET {{baseUrl}}/establecimientos/1
+Authorization: Bearer {{token}}
+
+### 34. Crear Establecimiento (Requiere rol DUENIO/ADMIN)
+POST {{baseUrl}}/establecimientos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Club Deportivo Test",
+  "descripcion": "Club para pruebas",
+  "direccion": "Calle Ficticia 123",
+  "telefono": "+5491123456789",
+  "email": "club@test.com",
+  "latitud": -34.6037,
+  "longitud": -58.3816,
+  "duenioId": 2
+}
+
+### =============================================================================
+### POS - Point of Sale
+### =============================================================================
+
+### 35. Obtener Catálogo de Productos
+GET {{baseUrl}}/pos/productos/1
+Authorization: Bearer {{token}}
+
+### 36. Registrar Venta
+POST {{baseUrl}}/pos/venta
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "establecimientoId": 1,
+  "productos": [
+    {
+      "productoId": 1,
+      "cantidad": 2,
+      "precioUnitario": 5.00
+    }
+  ],
+  "metodoPago": "EFECTIVO",
+  "montoTotal": 10.00
+}
+
+### 37. Obtener Reporte Diario
+GET {{baseUrl}}/pos/reporte-diario?establecimientoId=1&fecha=2026-04-15
+Authorization: Bearer {{token}}
+
+### 38. Obtener Reporte por Rango
+GET {{baseUrl}}/pos/reporte-rango?establecimientoId=1&fechaInicio=2026-04-01&fechaFin=2026-04-15
+Authorization: Bearer {{token}}
+
+### 39. Obtener Venta por ID
+GET {{baseUrl}}/pos/venta/1
+Authorization: Bearer {{token}}
+
+### =============================================================================
+### PAGOS - Mercado Pago
+### =============================================================================
+
+### 40. Webhook de Mercado Pago (Endpoint público - sin auth)
+POST {{baseUrl}}/pagos/webhook
+Content-Type: application/json
+
+{
+  "id": "123456789",
+  "status": "approved",
+  "external_reference": "RESERVA_1"
+}
+
+### 41. Reintentar Pago
+POST {{baseUrl}}/pagos/1/reintentar
+Authorization: Bearer {{token}}
+
+### =============================================================================
+### PRUEBAS DE AUTORIZACIÓN - Verificar 403 Forbidden
+### =============================================================================
+
+### 42. Intentar crear módulo sin rol DUENIO (debe fallar con 403)
+POST {{baseUrl}}/booking/modulos-fisicos
+Content-Type: application/json
+Authorization: Bearer {{cliente_token}}
+
+{
+  "nombre": "Cancha No Autorizada",
+  "estado": "DISPONIBLE",
+  "establecimientoId": 1
+}
+
+### =============================================================================
+### PRUEBAS DE VALIDACIÓN - Verificar 400 Bad Request
+### =============================================================================
+
+### 43. Registro con email inválido (debe fallar con 400)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "email-invalido",
+  "nombre": "Test",
+  "password": "123",
+  "rol": "CLIENTE"
+}
+
+### 44. Crear producto cancha con datos inválidos (debe fallar con 400)
+POST {{baseUrl}}/booking/productos-cancha
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "",
+  "deporte": "INVALIDO",
+  "superficie": "Césped",
+  "modulosNecesarios": 0,
+  "duracionMinima": -1,
+  "intervaloPaso": 0,
+  "establecimientoId": 999
+}

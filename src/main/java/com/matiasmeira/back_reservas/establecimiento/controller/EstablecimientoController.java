@@ -1,5 +1,7 @@
 package com.matiasmeira.back_reservas.establecimiento.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,14 +22,12 @@ import com.matiasmeira.back_reservas.establecimiento.service.EstablecimientoServ
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 /**
  * Controlador REST para gestión de establecimientos (clubes, canchas).
  * Proporciona endpoints para búsqueda, detalle y creación de establecimientos.
  */
 @RestController
-@RequestMapping("/api/establecimientos")
+@RequestMapping("/establecimientos")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 public class EstablecimientoController {

@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
  * Proporciona endpoints públicos para login y registro.
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 public class AuthController {

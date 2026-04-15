@@ -1,5 +1,8 @@
 package com.matiasmeira.back_reservas.pos.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,15 +23,12 @@ import com.matiasmeira.back_reservas.pos.service.POSService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
-
 /**
  * Controlador REST para gestión del sistema POS (Point of Sale).
  * Proporciona endpoints para catálogo de productos, registro de ventas y reportes de caja.
  */
 @RestController
-@RequestMapping("/api/pos")
+@RequestMapping("/pos")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 public class PosController {

@@ -1,5 +1,8 @@
 package com.matiasmeira.back_reservas.booking.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,15 +22,12 @@ import com.matiasmeira.back_reservas.booking.service.ReservaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
-
 /**
  * Controlador REST para gestión de reservas y disponibilidad de canchas.
  * Proporciona endpoints para crear reservas, consultar disponibilidad e historial.
  */
 @RestController
-@RequestMapping("/api/booking")
+@RequestMapping("/booking")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 public class BookingController {

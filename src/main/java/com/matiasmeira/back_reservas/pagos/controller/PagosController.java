@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
  * Endpoint público para recibir notificaciones IPN de Mercado Pago.
  */
 @RestController
-@RequestMapping("/api/pagos")
+@RequestMapping("/pagos")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 public class PagosController {
